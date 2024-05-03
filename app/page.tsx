@@ -28,11 +28,15 @@ const Page = async () => {
 					<Button className='mb-5 '>Create</Button>
 				</Link>
 			</div>
-			<div className='grid grid-cols-3 gap-5'>
-				{notes?.map((note: any) => (
-					<CardNote key={note.id} note={note} />
-				))}
-			</div>
+			{notes.length <= 0 ? (
+				<div className='text-center text-2xl'>No notes ...</div>
+			) : (
+				<div className='grid grid-cols-3 gap-5'>
+					{notes?.map((note: any) => (
+						<CardNote key={note.id} note={note} />
+					))}
+				</div>
+			)}
 		</div>
 	);
 };

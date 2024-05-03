@@ -21,7 +21,7 @@ const formSchema = z.object({
 	content: z
 		.string()
 		.min(2, "Minimum 2 characters")
-		.max(500, "Maximum 500 characters"),
+		.max(50, "Maximum 50 characters"),
 });
 
 export default function CreateNotePage() {

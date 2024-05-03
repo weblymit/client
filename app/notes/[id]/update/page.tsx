@@ -1,6 +1,5 @@
 "use client";
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -24,28 +23,41 @@ const formSchema = z.object({
 		.max(500, "Maximum 500 characters"),
 });
 
-export default function CreateNotePage() {
+export default function UpdateNote({
+	params: { id },
+}: {
+	params: { id: number };
+}) {
+	const [note, setNote] = useState<any>(null);
+	// fetch
+	const fetchData = async () => {
+		const response = await axios.get(`http://localhost:3001/notes/${id}`);
+		setNote(response.data);
+		// return response.data;
+	};
+	useEffect(() => {
+		fetchData();
+	}, []);
+
 	const router = useRouter();
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			content: "",
+			content: note.content || "",
 		},
 	});
 
 	// 2. Define your submit handler.
 	function onSubmit(data: z.infer<typeof formSchema>) {
 		// 3. Send data to the server.
-		axios.post("http://localhost:3001/notes", {
+		axios.put(`http://localhost:3001/notes/${id}`, {
 			content: data.content,
-			userId: 2,
 		});
 		// redirect to the home page
 		router.push("/");
 	}
 
-	// 4. Render the form.
 	return (
 		<div className='container py-10'>
 			<Form {...form}>
@@ -59,15 +71,19 @@ export default function CreateNotePage() {
 						name='content'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Notes</FormLabel>
-								<FormControl>
-									<Textarea {...field} className='resize-y' rows={10} />
-								</FormControl>
-								<FormMessage />
+								<FormLabel htmlFor='content'>Content</FormLabel>
+								<Textarea
+									{...field}
+									id='content'
+									// placeholder='Enter your note'
+								/>
+								<FormMessage {...field} />
 							</FormItem>
 						)}
 					/>
-					<Button type='submit'>Submit</Button>
+					<FormControl>
+						<Button type='submit'>Update</Button>
+					</FormControl>
 				</form>
 			</Form>
 		</div>
